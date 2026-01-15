@@ -1,78 +1,104 @@
-# Module 2 Project — House Price Prediction (Linear Regression)
+# Project 2 — House Price Prediction (Linear Regression)
 
-Predict house **prices** using a **Linear Regression** model and the Kaggle dataset: [https://www.kaggle.com/shree1992/housedata](https://www.kaggle.com/shree1992/housedata)
+A notebook-based project that builds a **Linear Regression** model to predict **house prices** from housing features.
 
-## What this project does
+* Dataset (Kaggle): [https://www.kaggle.com/shree1992/housedata](https://www.kaggle.com/shree1992/housedata)
+* Main notebook: `Proyecto_mod2.ipynb`
+* Local dataset path used by the notebook: `datasets/data.csv`
 
-* Loads and explores a housing dataset.
-* Cleans a small number of extreme / under-represented cases to reduce outlier impact.
-* Trains and compares **three feature/encoding hypotheses**.
-* Evaluates with **RMSE** and **R²**, plus simple prediction plots.
+---
 
-## Dataset
+## What’s inside
 
-* Source: Kaggle (House Data)
-* Local file expected at: `datasets/data.csv`
-* Target column: `price`
+* **Phase 1:** Dataset import
+* **Phase 2:** Exploratory Data Analysis (EDA)
 
-## Approach (high level)
+  * Basic checks (shape, types, nulls)
+  * Distribution plots and outlier inspection
+  * Correlation analysis + feature pruning
+  * Handling categorical columns (`waterfront`, `city`, `statezip`, `date`, etc.)
+* **Phase 3:** Training (3 hypotheses)
 
-### Data preparation
+  * H1: numeric-only + one-hot for `waterfront`
+  * H2: target encoding for `date/city/statezip` (manual + smoothed variant)
+  * H3: remove low-correlation features (|corr| < 0.1)
+* **Phase 4:** Evaluation
 
-* Removed a few rare extremes (very high `price`, very high `bedrooms`/`bathrooms`) and `condition == 1`.
-* Dropped redundant / unhelpful columns:
+  * Metrics: **RMSE** and **R²**
+  * Plots: predicted vs actual comparisons
 
-  * `sqft_above` (highly correlated with `sqft_living`)
-  * `country` (single value)
-  * `street` (very high cardinality; location already covered by `city` and `statezip`)
+---
 
-### Modelling hypotheses
+## Quick start
 
-* **H1 — Numeric-only:** drop `object` columns; one-hot encode `waterfront`.
-* **H2 — Target Encoding:** target-encode `date`, `city`, `statezip` (manual and smoothed variants); one-hot encode `waterfront`.
-* **H3 — Feature reduction:** starting from H2 (manual), drop features with `|corr(price, feature)| < 0.1`.
+### 1) Create an environment (recommended)
 
-## Results summary
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+```
 
-* Linear Regression shows **large errors overall** (the relationship is not fully linear).
-* Best performance was obtained with **H2 (manual target encoding)**, but differences vs other hypotheses were **very small**.
-* Removing `price == 0` cases provided a **small improvement**.
-
-## How to run
-
-### 1) Create environment and install dependencies
+### 2) Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2) Ensure dataset path
+> Note: `requirements.txt` was exported from a notebook environment and may contain many Jupyter-related packages.
 
-* Place the file at: `datasets/data.csv`
+### 3) Run the notebook
 
-### 3) Run
+```bash
+jupyter lab
+```
 
-* Execute the notebook/script that contains the pipeline (EDA → training → evaluation).
+* Open: `Proyecto_mod2.ipynb`
+* Make sure the dataset exists at: `datasets/data.csv`
 
-## Repo structure (suggested)
+---
 
+## Data prep decisions (brief)
+
+To reduce the sensitivity of linear regression to rare extremes, the notebook removes a small number of:
+
+* very high-price houses
+* extreme `bedrooms`/`bathrooms`
+* under-represented `condition` category
+
+Also drops:
+
+* `sqft_above` (highly redundant with `sqft_living`)
+* `country` (single unique value)
+* `street` (too high-cardinality; location already covered by `city`/`statezip`)
+
+---
+
+## Outputs you should expect
+
+* Correlation heatmaps
+* Distribution plots (histograms/boxplots)
+* Predicted vs actual scatter plots
+* Printed RMSE/R² comparisons across hypotheses
+
+---
+
+## Repository structure
+
+* `Proyecto_mod2.ipynb` — full workflow (EDA → training → evaluation)
 * `datasets/`
 
-  * `data.csv`
-* `notebooks/`
+  * `data.csv` — dataset file
+* `requirements.txt` — dependencies
 
-  * `module2_house_price_regression.ipynb`
-* `requirements.txt`
-* `README.md`
-
-## Tech stack
-
-* Python, pandas, numpy
-* scikit-learn
-* matplotlib, seaborn
-* category_encoders
+---
 
 ## Next steps (optional)
 
-* Try non-linear models (Random Forest, Gradient Boosting, XGBoost/LightGBM).
-* Consider transforming the target (e.g., `log(price)`) to reduce skew.
+If you want better predictive performance than linear regression:
+
+* Try non-linear models (Random Forest, Gradient Boosting, XGBoost/LightGBM)
+* Consider `log(price)` to reduce skew
+* Revisit outlier strategy (robust methods or segmented modelling)
